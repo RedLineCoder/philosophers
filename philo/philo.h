@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/07/30 15:08:58 by moztop           ###   ########.fr       */
+/*   Updated: 2024/07/30 15:26:33 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef enum e_action
 # define MSG_EAT "is eating"
 # define MSG_SLEEP "is sleeping"
 
-// sysctl kern.num_taskthreads
+// sysctl kern.num_taskthreads for MacOS
 
 # define MAX_PHILO 2048
 
