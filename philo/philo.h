@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/07/30 15:26:33 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/01 22:06:50 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ typedef enum e_action
 	FORK,
 	EAT,
 	SLEEP
-}						t_action;
+}							t_action;
 
 # define MSG_DIE "died"
 # define MSG_THINK "is thinking"
@@ -32,26 +32,32 @@ typedef enum e_action
 # define MSG_SLEEP "is sleeping"
 
 // sysctl kern.num_taskthreads for MacOS
-
 # define MAX_PHILO 2048
+
+typedef unsigned long long	t_timestamp;
 
 typedef struct s_philo
 {
-	unsigned long long	timestamp;
-	int					index;
-	int					queue;
-	pthread_mutex_t		fork;
-
-}						t_philo;
+	int						index;
+	int						times_eaten;
+	pthread_t				thread;
+	t_timestamp				diestamp;
+	pthread_mutex_t			m_fork;
+	pthread_mutex_t			m_diestamp;
+}							t_philo;
 
 typedef struct s_main
 {
-	t_philo				philosophers[2048];
-	int					philo_count;
-	int					time_to_die;
-	int					time_to_eat;
-	int					time_to_sleep;
-	int					max_eat_count;
-}						t_main;
+	t_timestamp				started;
+	t_philo					philosophers[2048];
+	int						philo_count;
+	int						time_to_die;
+	int						time_to_eat;
+	int						time_to_sleep;
+	int						must_eat_count;
+}							t_main;
+
+t_timestamp					get_timestamp(void);
+int							philo_routine(void);
 
 #endif

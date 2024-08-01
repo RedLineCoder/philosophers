@@ -1,4 +1,4 @@
-SOURCES = main.c routine.c
+SOURCES = main.c utils.c
 NAME = philo
 CC = cc
 CFLAGS= -Wall -Wextra -Werror
