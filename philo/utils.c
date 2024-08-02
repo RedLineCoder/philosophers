@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/01 22:07:00 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/02 10:24:08 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ void	ft_print_action(void)
 	printf(MSG_DIE);
 }
 
-int	philo_routine(void)
+void	*philo_routine(void *ptr)
 {
+	(void)ptr;
+	return (NULL);
 }

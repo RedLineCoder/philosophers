@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/01 22:06:50 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/02 10:23:14 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,6 @@ typedef struct s_main
 }							t_main;
 
 t_timestamp					get_timestamp(void);
-int							philo_routine(void);
+void						*philo_routine(void *ptr);
 
 #endif
