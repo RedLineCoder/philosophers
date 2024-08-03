@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 18:02:51 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 18:33:33 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ int	init_philos(t_main *main)
 		main->philosophers[i].diestamp = main->started + main->time_to_die;
 		if (pthread_mutex_init(&main->philosophers[i].l_fork, NULL) != 0
 			|| pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
+			|| pthread_mutex_init(&main->philosophers[i].m_died, NULL) != 0
 			|| pthread_create(&main->philosophers[i].thread, NULL,
 				philo_routine, (void *)&main->philosophers[i]) != 0)
 			return (destroy_philos(main, i), 0);

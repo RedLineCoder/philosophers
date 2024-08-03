@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 18:23:18 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 18:33:01 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_main t_main;
 typedef struct s_philo
 {
 	int						index;
+	int						died;
 	int						times_eaten;
 	t_main					*main;
 	pthread_t				thread;
@@ -47,6 +48,7 @@ typedef struct s_philo
 	pthread_mutex_t			l_fork;
 	pthread_mutex_t			*r_fork;
 	pthread_mutex_t			m_diestamp;
+	pthread_mutex_t			m_died;
 }							t_philo;
 
 typedef struct s_main
