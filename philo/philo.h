@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/02 10:23:14 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 18:23:18 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,24 @@ typedef enum e_action
 # define MAX_PHILO 2048
 
 typedef unsigned long long	t_timestamp;
+typedef struct s_main t_main;
 
 typedef struct s_philo
 {
 	int						index;
 	int						times_eaten;
+	t_main					*main;
 	pthread_t				thread;
 	t_timestamp				diestamp;
-	pthread_mutex_t			m_fork;
+	pthread_mutex_t			l_fork;
+	pthread_mutex_t			*r_fork;
 	pthread_mutex_t			m_diestamp;
 }							t_philo;
 
 typedef struct s_main
 {
 	t_timestamp				started;
-	t_philo					philosophers[2048];
+	t_philo					philosophers[MAX_PHILO];
 	int						philo_count;
 	int						time_to_die;
 	int						time_to_eat;
@@ -58,6 +61,7 @@ typedef struct s_main
 }							t_main;
 
 t_timestamp					get_timestamp(void);
-void						*philo_routine(void *ptr);
+void						ft_usleep(t_timestamp ms);
+void						*philo_routine(void *arg);
 
 #endif

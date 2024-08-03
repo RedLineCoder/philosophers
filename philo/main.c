@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/02 10:23:50 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 18:02:51 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void	destroy_philos(t_main *main, int size)
 {
 	while (size)
 	{
-		if (pthread_mutex_lock(&main->philosophers[size].m_fork) != EINVAL)
-			pthread_mutex_destroy(&main->philosophers[size].m_fork);
+		if (pthread_mutex_lock(&main->philosophers[size].l_fork) != EINVAL)
+			pthread_mutex_destroy(&main->philosophers[size].l_fork);
 		if (pthread_mutex_lock(&main->philosophers[size].m_diestamp) != EINVAL)
 			pthread_mutex_destroy(&main->philosophers[size].m_diestamp);
 		size--;
@@ -69,16 +69,19 @@ int	init_philos(t_main *main)
 {
 	int	i;
 
-	i = -1;
-	while (++i < main->philo_count)
+	i = main->philo_count;
+	while (--i)
 	{
 		main->philosophers[i].index = i;
 		main->philosophers[i].diestamp = main->started + main->time_to_die;
-		if (pthread_mutex_init(&main->philosophers[i].m_fork, NULL) != 0
+		if (pthread_mutex_init(&main->philosophers[i].l_fork, NULL) != 0
 			|| pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
-			|| pthread_create(&main->philosophers[i].thread, NULL, philo_routine,
-				&main->philosophers[i]) != 0)
+			|| pthread_create(&main->philosophers[i].thread, NULL,
+				philo_routine, (void *)&main->philosophers[i]) != 0)
 			return (destroy_philos(main, i), 0);
+		main->philosophers[i].r_fork = &main->philosophers[(i + 1)
+			% main->philo_count].l_fork;
+		main->philosophers[i].main = main;
 	}
 	return (1);
 }

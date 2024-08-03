@@ -6,12 +6,12 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/02 10:24:08 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 18:23:46 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <stdio.h>
+#include <unistd.h>
 
 t_timestamp	get_timestamp(void)
 {
@@ -21,14 +21,25 @@ t_timestamp	get_timestamp(void)
 		return (0);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
-
-void	ft_print_action(void)
+void	ft_usleep(t_timestamp ms)
 {
-	printf(MSG_DIE);
+	t_timestamp	start;
+
+	start = get_timestamp();
+	while ((get_timestamp() - start) < ms)
+		usleep(1);
 }
 
-void	*philo_routine(void *ptr)
+void	philo_actions(t_philo *philo)
 {
-	(void)ptr;
+	pthread_mutex_lock(&philo->m_diestamp);
+	
+}
+
+void	*philo_routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
 	return (NULL);
 }
