@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 18:33:01 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 21:04:03 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,11 @@ typedef enum e_action
 # define MAX_PHILO 2048
 
 typedef unsigned long long	t_timestamp;
-typedef struct s_main t_main;
+typedef struct s_main		t_main;
 
 typedef struct s_philo
 {
 	int						index;
-	int						died;
 	int						times_eaten;
 	t_main					*main;
 	pthread_t				thread;
@@ -48,22 +47,29 @@ typedef struct s_philo
 	pthread_mutex_t			l_fork;
 	pthread_mutex_t			*r_fork;
 	pthread_mutex_t			m_diestamp;
-	pthread_mutex_t			m_died;
+	pthread_mutex_t			m_times_eaten;
 }							t_philo;
 
 typedef struct s_main
 {
 	t_timestamp				started;
+	pthread_mutex_t			m_ended;
 	t_philo					philosophers[MAX_PHILO];
 	int						philo_count;
 	int						time_to_die;
 	int						time_to_eat;
 	int						time_to_sleep;
 	int						must_eat_count;
+	int						ended;
 }							t_main;
 
 t_timestamp					get_timestamp(void);
 void						ft_usleep(t_timestamp ms);
 void						*philo_routine(void *arg);
+void						end_checker(t_main *main);
+void						philo_eat(t_philo *philo);
+void						philo_think(t_philo *philo);
+void						philo_sleep(t_philo *philo);
+void						join_philos(t_main *main);
 
 #endif

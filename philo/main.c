@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 18:33:33 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/03 21:03:58 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,9 @@ int	init_philos(t_main *main)
 		main->philosophers[i].diestamp = main->started + main->time_to_die;
 		if (pthread_mutex_init(&main->philosophers[i].l_fork, NULL) != 0
 			|| pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
-			|| pthread_mutex_init(&main->philosophers[i].m_died, NULL) != 0
-			|| pthread_create(&main->philosophers[i].thread, NULL,
-				philo_routine, (void *)&main->philosophers[i]) != 0)
+			|| pthread_mutex_init(&main->philosophers[i].m_times_eaten,
+				NULL) != 0 || pthread_create(&main->philosophers[i].thread,
+				NULL, philo_routine, (void *)&main->philosophers[i]) != 0)
 			return (destroy_philos(main, i), 0);
 		main->philosophers[i].r_fork = &main->philosophers[(i + 1)
 			% main->philo_count].l_fork;
@@ -105,5 +105,12 @@ int	main(int argc, char **argv)
 		return (write(2, "Timestamp initialization error!\n", 32), 1);
 	if (!init_philos(main))
 		return (write(2, "Philosopher initialization error!\n", 34), 1);
+	pthread_mutex_init(&main->m_ended, NULL);
+	end_checker(main);
+	pthread_mutex_lock(&main->m_ended);
+	main->ended = 1;
+	pthread_mutex_unlock(&main->m_ended);
+	join_philos(main);
+	destroy_philos(main, main->philo_count);
 	return (0);
 }
