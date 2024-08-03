@@ -3,10 +3,10 @@ NAME = philo
 CC = cc
 CFLAGS= -Wall -Wextra -Werror
 
-all: $(NAME)
-
 $(NAME): $(SOURCES) philo.h
 	$(CC) $(CFLAGS) $(SOURCES) -o $(NAME)
+
+all: $(NAME)
 
 clean:
 	$(RM) $(NAME)

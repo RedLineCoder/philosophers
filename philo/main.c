@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 21:03:58 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 00:50:29 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,17 @@ int	check_args(int argc, char **argv)
 
 u_int32_t	ft_atoui32(char *str)
 {
-	u_int32_t	num;
+	u_int32_t	result;
 
-	num = 0;
-	if (!str)
-		return (num);
+	result = 0;
 	while (*str == ' ' || (*str <= '\r' && *str >= '\t'))
 		str++;
-	while (*str <= 9 && *str >= 0)
+	while (*str >= '0' && *str <= '9')
 	{
-		num = (num * 10) + (*str - '0');
+		result = result * 10 + *str - 48;
 		str++;
 	}
-	return (num);
+	return (result);
 }
 
 void	destroy_philos(t_main *main, int size)
@@ -69,20 +67,19 @@ int	init_philos(t_main *main)
 {
 	int	i;
 
-	i = main->philo_count;
+	i = main->philo_count + 1;
 	while (--i)
 	{
 		main->philosophers[i].index = i;
 		main->philosophers[i].diestamp = main->started + main->time_to_die;
 		if (pthread_mutex_init(&main->philosophers[i].l_fork, NULL) != 0
 			|| pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
-			|| pthread_mutex_init(&main->philosophers[i].m_times_eaten,
-				NULL) != 0 || pthread_create(&main->philosophers[i].thread,
-				NULL, philo_routine, (void *)&main->philosophers[i]) != 0)
+			|| pthread_mutex_init(&main->philosophers[i].m_times_eaten, NULL) != 0
+			|| pthread_create(&(main->philosophers[i].thread), NULL, philo_routine, (void *)&(main->philosophers[i])) != 0)
 			return (destroy_philos(main, i), 0);
-		main->philosophers[i].r_fork = &main->philosophers[(i + 1)
-			% main->philo_count].l_fork;
+		main->philosophers[i].r_fork = &main->philosophers[(i + 1) % main->philo_count].l_fork;
 		main->philosophers[i].main = main;
+		printf("%i", i);
 	}
 	return (1);
 }
@@ -101,15 +98,15 @@ int	main(int argc, char **argv)
 	if (argc == 6)
 		main->must_eat_count = ft_atoui32(argv[5]);
 	main->started = get_timestamp();
-	if (!main->started)
+	if (!(main->started))
 		return (write(2, "Timestamp initialization error!\n", 32), 1);
 	if (!init_philos(main))
 		return (write(2, "Philosopher initialization error!\n", 34), 1);
-	pthread_mutex_init(&main->m_ended, NULL);
+	pthread_mutex_init(&(main->m_ended), NULL);
 	end_checker(main);
-	pthread_mutex_lock(&main->m_ended);
+	pthread_mutex_lock(&(main->m_ended));
 	main->ended = 1;
-	pthread_mutex_unlock(&main->m_ended);
+	pthread_mutex_unlock(&(main->m_ended));
 	join_philos(main);
 	destroy_philos(main, main->philo_count);
 	return (0);
