@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 21:04:03 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 02:32:15 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,10 @@
 
 typedef enum e_action
 {
-	DIE,
-	THINK,
-	FORK,
-	EAT,
-	SLEEP
-}							t_action;
+	INIT,
+	STARTED,
+	ENDED
+}			t_action;
 
 # define MSG_DIE "died"
 # define MSG_THINK "is thinking"

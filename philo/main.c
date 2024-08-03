@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 00:50:29 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 00:57:31 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	init_philos(t_main *main)
 {
 	int	i;
 
-	i = main->philo_count + 1;
+	i = main->philo_count;
 	while (--i)
 	{
 		main->philosophers[i].index = i;
@@ -79,7 +79,6 @@ int	init_philos(t_main *main)
 			return (destroy_philos(main, i), 0);
 		main->philosophers[i].r_fork = &main->philosophers[(i + 1) % main->philo_count].l_fork;
 		main->philosophers[i].main = main;
-		printf("%i", i);
 	}
 	return (1);
 }

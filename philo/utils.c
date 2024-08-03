@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 00:40:19 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 02:29:46 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	ft_usleep(t_timestamp ms)
 
 	start = get_timestamp();
 	while ((get_timestamp() - start) < ms)
-		usleep(1);
+		usleep(200);
 }
 
 void	end_checker(t_main *main)
