@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 10:07:25 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 14:03:39 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,18 @@ void	ft_usleep(t_timestamp ms)
 	start = get_timestamp();
 	while ((get_timestamp() - start) < ms)
 		usleep(200);
+}
+
+long long	fetch_data(pthread_mutex_t *mutex, void *data)
+{
+	long long	fetcher;
+
+	if (!pthread_mutex_lock(mutex))
+	{
+		fetcher = *(long long *)data;
+		return (pthread_mutex_unlock(mutex), fetcher);
+	}
+	return (0);
 }
 
 int	eat_checker(t_main *main, int i)

@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 09:27:57 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 14:02:28 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,6 @@ void						philo_eat(t_philo *philo);
 void						philo_sleep_think(t_philo *philo);
 void						join_philos(t_main *main);
 void						end_checker(t_main *main);
-int						check_end(t_philo *philo);
+int							check_end(t_philo *philo);
 
 #endif
