@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 02:32:15 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 09:27:57 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,14 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-typedef enum e_action
-{
-	INIT,
-	STARTED,
-	ENDED
-}			t_action;
-
 # define MSG_DIE "died"
 # define MSG_THINK "is thinking"
 # define MSG_FORK "has taken a fork"
 # define MSG_EAT "is eating"
 # define MSG_SLEEP "is sleeping"
+# define INIT 0
+# define START 1
+# define END 2
 
 // sysctl kern.num_taskthreads for MacOS
 # define MAX_PHILO 2048
@@ -50,24 +46,26 @@ typedef struct s_philo
 
 typedef struct s_main
 {
-	t_timestamp				started;
-	pthread_mutex_t			m_ended;
-	t_philo					philosophers[MAX_PHILO];
+	int						status;
+	int						satisfied_philos;
 	int						philo_count;
 	int						time_to_die;
 	int						time_to_eat;
 	int						time_to_sleep;
 	int						must_eat_count;
-	int						ended;
+	t_timestamp				startstamp;
+	pthread_mutex_t			m_status;
+	pthread_mutex_t			m_satisfied_philos;
+	t_philo					philosophers[MAX_PHILO];
 }							t_main;
 
 t_timestamp					get_timestamp(void);
 void						ft_usleep(t_timestamp ms);
 void						*philo_routine(void *arg);
-void						end_checker(t_main *main);
 void						philo_eat(t_philo *philo);
-void						philo_think(t_philo *philo);
-void						philo_sleep(t_philo *philo);
+void						philo_sleep_think(t_philo *philo);
 void						join_philos(t_main *main);
+void						end_checker(t_main *main);
+int						check_end(t_philo *philo);
 
 #endif

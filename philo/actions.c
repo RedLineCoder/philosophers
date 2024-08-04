@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 18:20:49 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/03 21:04:09 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 10:01:19 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,30 +22,52 @@ void	join_philos(t_main *main)
 		pthread_join(main->philosophers[i].thread, NULL);
 }
 
-void	take_forks(t_philo *philo)
+int	check_end(t_philo *philo)
+{
+	if (philo->main->philo_count == 1)
+		return (1);
+	pthread_mutex_lock(&philo->main->m_status);
+	if (philo->main->status == END)
+	{
+		pthread_mutex_unlock(&philo->main->m_status);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->main->m_status);
+	return (0);
+}
+
+int	take_forks(t_philo *philo)
 {
 	if (philo->index % 2)
 	{
 		pthread_mutex_lock(&philo->l_fork);
+		if (check_end(philo))
+			return (pthread_mutex_unlock(&philo->l_fork), 0);
 		printf("%lld Philosopher %i %s\n", get_timestamp()
-			- philo->main->started, philo->index + 1, MSG_FORK);
+			- philo->main->startstamp, philo->index, MSG_FORK);
 	}
 	pthread_mutex_lock(philo->r_fork);
-	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->started,
-		philo->index + 1, MSG_FORK);
+	if (check_end(philo))
+			return (pthread_mutex_unlock(philo->r_fork), 0);
+	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->startstamp,
+		philo->index, MSG_FORK);
 	if (!(philo->index % 2))
 	{
 		pthread_mutex_lock(&philo->l_fork);
+		if (check_end(philo))
+			return (pthread_mutex_unlock(&philo->l_fork), 0);
 		printf("%lld Philosopher %i %s\n", get_timestamp()
-			- philo->main->started, philo->index + 1, MSG_FORK);
+			- philo->main->startstamp, philo->index, MSG_FORK);
 	}
+	return (1);
 }
 
 void	philo_eat(t_philo *philo)
 {
-	take_forks(philo);
-	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->started,
-		philo->index + 1, MSG_EAT);
+	if (!take_forks(philo))
+		return ;
+	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->startstamp,
+		philo->index, MSG_EAT);
 	pthread_mutex_lock(&philo->m_diestamp);
 	philo->diestamp = get_timestamp() + philo->main->time_to_die;
 	pthread_mutex_unlock(&philo->m_diestamp);
@@ -57,15 +79,15 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(philo->r_fork);
 }
 
-void	philo_think(t_philo *philo)
+void	philo_sleep_think(t_philo *philo)
 {
-	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->started,
-		philo->index + 1, MSG_THINK);
-}
-
-void	philo_sleep(t_philo *philo)
-{
-	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->started,
-		philo->index + 1, MSG_SLEEP);
+	if (check_end(philo))
+		return ;
+	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->startstamp,
+		philo->index, MSG_SLEEP);
 	ft_usleep(philo->main->time_to_sleep);
+	if (check_end(philo))
+		return ;
+	printf("%lld Philosopher %i %s\n", get_timestamp() - philo->main->startstamp,
+		philo->index, MSG_THINK);
 }

@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 00:57:31 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/04 09:53:08 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ void	destroy_philos(t_main *main, int size)
 			pthread_mutex_destroy(&main->philosophers[size].m_diestamp);
 		size--;
 	}
+	if (pthread_mutex_lock(&main->m_status) != EINVAL)
+		pthread_mutex_destroy(&main->m_status);
 }
 
 int	init_philos(t_main *main)
@@ -68,10 +70,10 @@ int	init_philos(t_main *main)
 	int	i;
 
 	i = main->philo_count;
-	while (--i)
+	while (--i > -1)
 	{
-		main->philosophers[i].index = i;
-		main->philosophers[i].diestamp = main->started + main->time_to_die;
+		main->philosophers[i].index = i + 1;
+		main->philosophers[i].diestamp = get_timestamp() + main->time_to_die;
 		if (pthread_mutex_init(&main->philosophers[i].l_fork, NULL) != 0
 			|| pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
 			|| pthread_mutex_init(&main->philosophers[i].m_times_eaten, NULL) != 0
@@ -96,16 +98,14 @@ int	main(int argc, char **argv)
 	main->must_eat_count = -1;
 	if (argc == 6)
 		main->must_eat_count = ft_atoui32(argv[5]);
-	main->started = get_timestamp();
-	if (!(main->started))
-		return (write(2, "Timestamp initialization error!\n", 32), 1);
+	pthread_mutex_init(&(main->m_status), NULL);
 	if (!init_philos(main))
 		return (write(2, "Philosopher initialization error!\n", 34), 1);
-	pthread_mutex_init(&(main->m_ended), NULL);
+	pthread_mutex_lock(&(main->m_status));
+	main->startstamp = get_timestamp();
+	main->status = START;
+	pthread_mutex_unlock(&(main->m_status));
 	end_checker(main);
-	pthread_mutex_lock(&(main->m_ended));
-	main->ended = 1;
-	pthread_mutex_unlock(&(main->m_ended));
 	join_philos(main);
 	destroy_philos(main, main->philo_count);
 	return (0);
