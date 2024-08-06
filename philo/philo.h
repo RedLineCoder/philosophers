@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 14:02:28 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 17:58:28 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,13 @@
 # define MSG_FORK "has taken a fork"
 # define MSG_EAT "is eating"
 # define MSG_SLEEP "is sleeping"
+
 # define INIT 0
 # define START 1
 # define END 2
+
+# define INT32 32
+# define LLD 64
 
 // sysctl kern.num_taskthreads for MacOS
 # define MAX_PHILO 2048
@@ -35,10 +39,11 @@ typedef struct s_philo
 {
 	int						index;
 	int						times_eaten;
+	int						satisfied;
 	t_main					*main;
 	pthread_t				thread;
 	t_timestamp				diestamp;
-	pthread_mutex_t			l_fork;
+	pthread_mutex_t			*l_fork;
 	pthread_mutex_t			*r_fork;
 	pthread_mutex_t			m_diestamp;
 	pthread_mutex_t			m_times_eaten;
@@ -55,8 +60,8 @@ typedef struct s_main
 	int						must_eat_count;
 	t_timestamp				startstamp;
 	pthread_mutex_t			m_status;
-	pthread_mutex_t			m_satisfied_philos;
 	t_philo					philosophers[MAX_PHILO];
+	pthread_mutex_t			forks[MAX_PHILO];
 }							t_main;
 
 t_timestamp					get_timestamp(void);
@@ -67,5 +72,6 @@ void						philo_sleep_think(t_philo *philo);
 void						join_philos(t_main *main);
 void						end_checker(t_main *main);
 int							check_end(t_philo *philo);
+long long					fetch_data(pthread_mutex_t *mutex, void *data, int size);
 
 #endif

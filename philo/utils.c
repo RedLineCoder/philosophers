@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/04 14:03:39 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:15:28 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,26 +32,32 @@ void	ft_usleep(t_timestamp ms)
 		usleep(200);
 }
 
-long long	fetch_data(pthread_mutex_t *mutex, void *data)
+long long	fetch_data(pthread_mutex_t *mutex, void *data, int size)
 {
 	long long	fetcher;
 
 	if (!pthread_mutex_lock(mutex))
 	{
-		fetcher = *(long long *)data;
+		if (size == 4)
+			fetcher = *(int *)data;
+		if (size == 8)
+			fetcher = *(long long *)data;
 		return (pthread_mutex_unlock(mutex), fetcher);
 	}
 	return (0);
 }
 
+/* long long	set_data(pthread_mutex_t *mutex, void *data, void *write)
+{
+} */
 int	eat_checker(t_main *main, int i)
 {
-	pthread_mutex_lock(&main->philosophers[i].m_times_eaten);
-	if (main->philosophers[i].times_eaten == main->must_eat_count)
+	if ((int)fetch_data(&main->philosophers[i].m_times_eaten,
+			&main->philosophers[i].times_eaten, 4) == main->must_eat_count)
 	{
-		pthread_mutex_unlock(&main->philosophers[i].m_times_eaten);
-		pthread_mutex_lock(&main->m_satisfied_philos);
-		main->satisfied_philos++;
+		if (!main->philosophers[i].satisfied)
+			main->satisfied_philos++;
+		main->philosophers[i].satisfied = 1;
 		if (main->satisfied_philos == main->philo_count)
 		{
 			pthread_mutex_lock(&main->m_status);
@@ -59,10 +65,7 @@ int	eat_checker(t_main *main, int i)
 			pthread_mutex_unlock(&main->m_status);
 			return (1);
 		}
-		pthread_mutex_unlock(&main->m_satisfied_philos);
 	}
-	else
-		pthread_mutex_unlock(&main->philosophers[i].m_times_eaten);
 	return (0);
 }
 
@@ -71,20 +74,18 @@ void	end_checker(t_main *main)
 	int	i;
 
 	i = 0;
-	while (1 && main->philo_count > 0)
+	while (1)
 	{
-		pthread_mutex_lock(&main->philosophers[i].m_diestamp);
-		if (main->philosophers[i].diestamp < get_timestamp())
+		if ((t_timestamp)fetch_data(&main->philosophers[i].m_diestamp,
+				&main->philosophers[i].diestamp, 8) < get_timestamp())
 		{
-			printf("%lld Philosopher %i %s\n", get_timestamp() - main->startstamp,
-				main->philosophers[i].index, MSG_DIE);
+			printf("%lld Philosopher %i %s\n", get_timestamp()
+				- main->startstamp, main->philosophers[i].index, MSG_DIE);
 			pthread_mutex_lock(&main->m_status);
 			main->status = END;
 			pthread_mutex_unlock(&main->m_status);
-			pthread_mutex_unlock(&main->philosophers[i].m_diestamp);
 			return ;
 		}
-		pthread_mutex_unlock(&main->philosophers[i].m_diestamp);
 		if (eat_checker(main, i))
 			return ;
 		i = (i + 1) % main->philo_count;
@@ -103,27 +104,18 @@ void	philo_actions(t_philo *philo)
 
 void	*philo_routine(void *arg)
 {
-	t_philo *const	philo = (t_philo *)arg;
-
+	t_philo *const philo = (t_philo *)arg;
 	while (1)
 	{
-		pthread_mutex_lock(&philo->main->m_status);
-		if (philo->main->status != INIT)
-		{
-			pthread_mutex_unlock(&philo->main->m_status);
+		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
+				4) != INIT)
 			break ;
-		}
-		pthread_mutex_unlock(&philo->main->m_status);
 	}
 	while (1)
 	{
-		pthread_mutex_lock(&philo->main->m_status);
-		if (philo->main->status != START)
-		{
-			pthread_mutex_unlock(&philo->main->m_status);
+		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
+				4) != START)
 			break ;
-		}
-		pthread_mutex_unlock(&philo->main->m_status);
 		philo_actions(philo);
 	}
 	return (NULL);
