@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:15:30 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:17:17 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,8 @@ int	init_philos(t_main *main)
 
 int	main(int argc, char **argv)
 {
-	t_main *const main = &(t_main){0};
+	t_main *const	main = &(t_main){0};
+
 	if (!check_args(argc, argv))
 		return (1);
 	main->philo_count = ft_atoui32(argv[1]);

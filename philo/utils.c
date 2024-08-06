@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:15:28 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:19:43 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,6 @@ long long	fetch_data(pthread_mutex_t *mutex, void *data, int size)
 	return (0);
 }
 
-/* long long	set_data(pthread_mutex_t *mutex, void *data, void *write)
-{
-} */
 int	eat_checker(t_main *main, int i)
 {
 	if ((int)fetch_data(&main->philosophers[i].m_times_eaten,
@@ -90,33 +87,4 @@ void	end_checker(t_main *main)
 			return ;
 		i = (i + 1) % main->philo_count;
 	}
-}
-
-void	philo_actions(t_philo *philo)
-{
-	if (check_end(philo))
-		return ;
-	philo_eat(philo);
-	if (check_end(philo))
-		return ;
-	philo_sleep_think(philo);
-}
-
-void	*philo_routine(void *arg)
-{
-	t_philo *const philo = (t_philo *)arg;
-	while (1)
-	{
-		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
-				4) != INIT)
-			break ;
-	}
-	while (1)
-	{
-		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
-				4) != START)
-			break ;
-		philo_actions(philo);
-	}
-	return (NULL);
 }

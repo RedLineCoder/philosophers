@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 17:58:28 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:17:40 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void						philo_sleep_think(t_philo *philo);
 void						join_philos(t_main *main);
 void						end_checker(t_main *main);
 int							check_end(t_philo *philo);
-long long					fetch_data(pthread_mutex_t *mutex, void *data, int size);
+long long					fetch_data(pthread_mutex_t *mutex, void *data,
+								int size);
 
 #endif

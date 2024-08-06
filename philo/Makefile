@@ -1,9 +1,10 @@
-SOURCES = main.c utils.c actions.c
 NAME = philo
+HEADER = philo.h
+SOURCES = main.c utils.c actions.c philos.c
 CC = cc
 CFLAGS= -Wall -Wextra -Werror
 
-$(NAME): $(SOURCES) philo.h
+$(NAME): $(SOURCES) $(HEADER)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(NAME)
 
 all: $(NAME)

@@ -6,21 +6,12 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 18:20:49 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:15:24 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:18:33 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <stdio.h>
-
-void	join_philos(t_main *main)
-{
-	int	i;
-
-	i = -1;
-	while (++i < main->philo_count)
-		pthread_join(main->philosophers[i].thread, NULL);
-}
 
 void	print_action(t_philo *philo, char *msg)
 {
