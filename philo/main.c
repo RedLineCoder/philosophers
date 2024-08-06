@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:17:17 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:53:40 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ int	init_philos(t_main *main)
 {
 	int	i;
 
+	if (!main->philo_count)
+		return (0);
 	i = main->philo_count;
 	while (--i > -1)
 		if (pthread_mutex_init(&main->forks[i], NULL) != 0)
@@ -98,8 +100,6 @@ int	main(int argc, char **argv)
 	if (!check_args(argc, argv))
 		return (1);
 	main->philo_count = ft_atoui32(argv[1]);
-	if (!main->philo_count)
-		return (1);
 	main->time_to_die = ft_atoui32(argv[2]);
 	main->time_to_eat = ft_atoui32(argv[3]);
 	main->time_to_sleep = ft_atoui32(argv[4]);

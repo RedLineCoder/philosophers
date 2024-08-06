@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 18:20:49 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:18:33 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/06 18:50:13 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	check_end(t_philo *philo)
 {
 	if ((int)fetch_data(&philo->main->m_status, &philo->main->status, 4) == END)
 		return (1);
-	if (philo->main->philo_count == 1)
+	if (philo->r_fork == philo->l_fork)
 	{
 		printf("%llu Philosopher %i %s\n", get_timestamp()
 			- philo->main->startstamp, philo->index, MSG_FORK);
