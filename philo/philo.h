@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/08 17:00:33 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 18:46:06 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@
 # define INIT 0
 # define START 1
 # define END 2
-
-// sysctl kern.num_taskthreads for MacOS
-# define MAX_PHILO 2048
 
 typedef unsigned long long	t_timestamp;
 typedef struct s_main		t_main;
