@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/08 16:55:54 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 17:05:47 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 int	check_args(int argc, char **argv)
@@ -76,6 +77,7 @@ int	init_philos(t_main *main)
 	main->philosophers = malloc(sizeof(t_philo) * main->philo_count);
 	if (!main->philosophers)
 		return (0);
+	memset(main->philosophers, 0, sizeof(t_philo) * main->philo_count);
 	main->forks = malloc(sizeof(pthread_mutex_t) * main->philo_count);
 	if (!main->forks)
 		return (free(main->philosophers), 0);
