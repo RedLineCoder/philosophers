@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 18:18:24 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:19:11 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 15:08:10 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,6 @@ void	join_philos(t_main *main)
 	i = -1;
 	while (++i < main->philo_count)
 		pthread_join(main->philosophers[i].thread, NULL);
-}
-
-void	philo_actions(t_philo *philo)
-{
-	if (check_end(philo))
-		return ;
-	philo_eat(philo);
-	if (check_end(philo))
-		return ;
-	philo_sleep_think(philo);
 }
 
 void	*philo_routine(void *arg)
@@ -46,7 +36,8 @@ void	*philo_routine(void *arg)
 		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
 				4) != START)
 			break ;
-		philo_actions(philo);
+		philo_eat(philo);
+		philo_sleep_think(philo);
 	}
 	return (NULL);
 }
