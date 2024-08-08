@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 18:18:24 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/08 15:08:10 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 16:36:50 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,22 @@ void	join_philos(t_main *main)
 	i = -1;
 	while (++i < main->philo_count)
 		pthread_join(main->philosophers[i].thread, NULL);
+}
+
+int	init_philo(t_main	*main, int i)
+{
+	main->philosophers[i].index = i + 1;
+	main->philosophers[i].main = main;
+	main->philosophers[i].l_fork = &main->forks[i];
+	main->philosophers[i].r_fork = &main->forks[(i + 1)
+		% main->philo_count];
+	main->philosophers[i].diestamp = get_timestamp() + main->time_to_die;
+	if (pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
+		|| pthread_mutex_init(&main->philosophers[i].m_times_eaten,
+			NULL) != 0 || pthread_create(&(main->philosophers[i].thread),
+			NULL, philo_routine, (void *)&(main->philosophers[i])) != 0)
+		return (destroy_philos(main, i), 0);
+	return (1);
 }
 
 void	*philo_routine(void *arg)

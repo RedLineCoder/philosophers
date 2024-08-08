@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:19:43 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 16:46:30 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,10 @@ long long	fetch_data(pthread_mutex_t *mutex, void *data, int size)
 
 int	eat_checker(t_main *main, int i)
 {
+	if (main->must_eat_count == -1)
+		return (0);
 	if ((int)fetch_data(&main->philosophers[i].m_times_eaten,
-			&main->philosophers[i].times_eaten, 4) == main->must_eat_count)
+			&main->philosophers[i].times_eaten, 4) >= main->must_eat_count)
 	{
 		if (!main->philosophers[i].satisfied)
 			main->satisfied_philos++;

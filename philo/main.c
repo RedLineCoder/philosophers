@@ -6,13 +6,14 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:06 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:53:40 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 16:55:54 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 int	check_args(int argc, char **argv)
@@ -53,14 +54,15 @@ u_int32_t	ft_atoui32(char *str)
 
 void	destroy_philos(t_main *main, int size)
 {
-	while (size)
+	while (--size > -1)
 	{
 		if (pthread_mutex_lock(&main->forks[size]) != EINVAL)
 			pthread_mutex_destroy(&main->forks[size]);
 		if (pthread_mutex_lock(&main->philosophers[size].m_diestamp) != EINVAL)
 			pthread_mutex_destroy(&main->philosophers[size].m_diestamp);
-		size--;
 	}
+	free(main->philosophers);
+	free(main->forks);
 	if (pthread_mutex_lock(&main->m_status) != EINVAL)
 		pthread_mutex_destroy(&main->m_status);
 }
@@ -71,32 +73,28 @@ int	init_philos(t_main *main)
 
 	if (!main->philo_count)
 		return (0);
-	i = main->philo_count;
-	while (--i > -1)
+	main->philosophers = malloc(sizeof(t_philo) * main->philo_count);
+	if (!main->philosophers)
+		return (0);
+	main->forks = malloc(sizeof(pthread_mutex_t) * main->philo_count);
+	if (!main->forks)
+		return (free(main->philosophers), 0);
+	i = -1;
+	while (++i < main->philo_count)
 		if (pthread_mutex_init(&main->forks[i], NULL) != 0)
 			return (destroy_philos(main, i), 0);
-	i = main->philo_count;
-	while (--i > -1)
-	{
-		main->philosophers[i].index = i + 1;
-		main->philosophers[i].main = main;
-		main->philosophers[i].l_fork = &main->forks[i];
-		main->philosophers[i].r_fork = &main->forks[(i + 1)
-			% main->philo_count];
-		main->philosophers[i].diestamp = get_timestamp() + main->time_to_die;
-		if (pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
-			|| pthread_mutex_init(&main->philosophers[i].m_times_eaten,
-				NULL) != 0 || pthread_create(&(main->philosophers[i].thread),
-				NULL, philo_routine, (void *)&(main->philosophers[i])) != 0)
-			return (destroy_philos(main, i), 0);
-	}
+	i = -1;
+	while (++i < main->philo_count)
+		if (!init_philo(main, i))
+			return (0);
 	return (1);
 }
 
 int	main(int argc, char **argv)
 {
-	t_main *const	main = &(t_main){0};
+	t_main	*main;
 
+	main = &(t_main){0};
 	if (!check_args(argc, argv))
 		return (1);
 	main->philo_count = ft_atoui32(argv[1]);

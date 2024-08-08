@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 14:11:10 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/06 18:17:40 by moztop           ###   ########.fr       */
+/*   Updated: 2024/08/08 16:36:40 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,13 @@ typedef struct s_main
 	int						must_eat_count;
 	t_timestamp				startstamp;
 	pthread_mutex_t			m_status;
-	t_philo					philosophers[MAX_PHILO];
-	pthread_mutex_t			forks[MAX_PHILO];
+	t_philo					*philosophers;
+	pthread_mutex_t			*forks;
 }							t_main;
 
 t_timestamp					get_timestamp(void);
+int							init_philo(t_main	*main, int i);
+void						destroy_philos(t_main *main, int size);
 void						ft_usleep(t_timestamp ms);
 void						*philo_routine(void *arg);
 void						philo_eat(t_philo *philo);
