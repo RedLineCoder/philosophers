@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:20:32 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/08 16:46:30 by moztop           ###   ########.fr       */
+/*   Updated: 2024/09/02 15:54:24 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ void	end_checker(t_main *main)
 	while (1)
 	{
 		if ((t_timestamp)fetch_data(&main->philosophers[i].m_diestamp,
-				&main->philosophers[i].diestamp, 8) < get_timestamp())
+				&main->philosophers[i].diestamp, 8) < get_timestamp()
+			&& !fetch_data(&main->m_status, &main->status, 4))
 		{
 			printf("%lld Philosopher %i %s\n", get_timestamp()
 				- main->startstamp, main->philosophers[i].index, MSG_DIE);

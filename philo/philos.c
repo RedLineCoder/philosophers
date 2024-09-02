@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 18:18:24 by moztop            #+#    #+#             */
-/*   Updated: 2024/08/08 16:36:50 by moztop           ###   ########.fr       */
+/*   Updated: 2024/09/02 15:55:42 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ int	init_philo(t_main	*main, int i)
 	main->philosophers[i].l_fork = &main->forks[i];
 	main->philosophers[i].r_fork = &main->forks[(i + 1)
 		% main->philo_count];
-	main->philosophers[i].diestamp = get_timestamp() + main->time_to_die;
 	if (pthread_mutex_init(&main->philosophers[i].m_diestamp, NULL) != 0
 		|| pthread_mutex_init(&main->philosophers[i].m_times_eaten,
 			NULL) != 0 || pthread_create(&(main->philosophers[i].thread),
@@ -45,7 +44,10 @@ void	*philo_routine(void *arg)
 	{
 		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
 				4) != INIT)
+		{
+			philo->diestamp = get_timestamp() + philo->main->time_to_die;
 			break ;
+		}
 	}
 	while (1)
 	{
