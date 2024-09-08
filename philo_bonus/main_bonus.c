@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/08 07:26:24 by moztop            #+#    #+#             */
-/*   Updated: 2024/09/08 07:39:37 by moztop           ###   ########.fr       */
+/*   Updated: 2024/09/08 10:50:19 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,23 @@ u_int32_t	ft_atoui32(char *str)
 		str++;
 	}
 	return (result);
+}
+
+t_philo	*init_philo(t_main *main, int index)
+{
+	t_philo	*philo;
+	int		i;
+
+	if (!main->philo_count)
+		return (0);
+	philo = malloc(sizeof(t_philo));
+	if (!philo)
+		return (0);
+	memset(philo, 0, sizeof(t_philo));
+	philo->index = index;
+	philo->main = main;
+	if (!pthread_create(&(philo->thread), NULL, philo_routine, (void *)&(philo)) != 0)
+		return (free(philo));
 }
 
 int	main(int argc, char **argv)
