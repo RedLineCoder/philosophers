@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/08 07:26:24 by moztop            #+#    #+#             */
-/*   Updated: 2024/09/08 14:43:24 by moztop           ###   ########.fr       */
+/*   Updated: 2024/09/08 15:12:08 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,8 @@ t_philo	*start_philo(t_main *main, int index)
 		return (free(philo));
 }
 
-int	main(int argc, char **argv)
+int	init_main(int argc, char **argv, t_main *main)
 {
-	t_main *const	main = &(t_main){0};
-
 	main->sem = sem_open("sem", O_CREAT | O_EXCL, O_RDWR, main->philo_count);
 	if (!check_args(argc, argv))
 		return (1);
@@ -81,5 +79,25 @@ int	main(int argc, char **argv)
 	if (argc == 6)
 		main->must_eat_count = ft_atoui32(argv[5]);
 	main->startstamp = get_timestamp();
+}
+
+int	main(int argc, char **argv)
+{
+	t_main *const	main = &(t_main){0};
+	pid_t			pid;
+	int				index;
+
+	init_main(argc, argv, main);
+	index = 1;
+	while (pid != 0 && index <= main->philo_count)
+	{
+		pid = fork();
+		start_philo(main, index);
+		index++;
+	}
+	if (pid == 0)
+	{
+		
+	}
 	return (0);
 }
