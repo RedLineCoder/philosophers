@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/08 07:26:24 by moztop            #+#    #+#             */
-/*   Updated: 2024/09/08 10:50:19 by moztop           ###   ########.fr       */
+/*   Updated: 2024/09/08 14:43:24 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ u_int32_t	ft_atoui32(char *str)
 	return (result);
 }
 
-t_philo	*init_philo(t_main *main, int index)
+t_philo	*start_philo(t_main *main, int index)
 {
 	t_philo	*philo;
 	int		i;
@@ -70,6 +70,7 @@ int	main(int argc, char **argv)
 {
 	t_main *const	main = &(t_main){0};
 
+	main->sem = sem_open("sem", O_CREAT | O_EXCL, O_RDWR, main->philo_count);
 	if (!check_args(argc, argv))
 		return (1);
 	main->philo_count = ft_atoui32(argv[1]);

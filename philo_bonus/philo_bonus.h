@@ -6,7 +6,7 @@
 /*   By: moztop <moztop@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/08 07:26:20 by moztop            #+#    #+#             */
-/*   Updated: 2024/09/08 10:51:08 by moztop           ###   ########.fr       */
+/*   Updated: 2024/09/08 14:49:57 by moztop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <pthread.h>
 # include <sys/time.h>
+# include <semaphore.h>
 
 # define MSG_DIE "died"
 # define MSG_THINK "is thinking"
@@ -31,6 +32,7 @@ typedef struct s_main
 	int						time_to_eat;
 	int						time_to_sleep;
 	int						must_eat_count;
+	sem_t					*sem;
 	t_timestamp				startstamp;
 }							t_main;
 
@@ -44,5 +46,7 @@ typedef struct s_philo
 }							t_philo;
 
 t_timestamp	get_timestamp(void);
+void		ft_usleep(t_timestamp ms);
+int			*philo_routine(void *arg);
 
 #endif
