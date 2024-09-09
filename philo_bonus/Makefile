@@ -1,6 +1,6 @@
 NAME = philo_bonus
 HEADER = philo_bonus.h
-SOURCES = main_bonus.c utils_bonus.c
+SOURCES = main_bonus.c utils_bonus.c routine_bonus.c
 CC = cc
 CFLAGS= -Wall -Wextra -Werror
 

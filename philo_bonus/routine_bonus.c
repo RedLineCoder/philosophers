@@ -47,7 +47,7 @@ void	philo_sleep_think(t_philo *philo)
 	print_action(philo, MSG_THINK);
 }
 
-int	*philo_routine(void *arg)
+void	*philo_routine(void *arg)
 {
 	t_philo *const	philo = (t_philo *)arg;
 
@@ -55,11 +55,10 @@ int	*philo_routine(void *arg)
 	while (1)
 	{
 		if (philo->times_eaten >= philo->main->must_eat_count)
-			return (1);
+			exit (0);
 		if (philo->diestamp < get_timestamp())
-			return (2);
+			exit (1);
 		philo_eat(philo);
 		philo_sleep_think(philo);
 	}
-	return (0);
 }

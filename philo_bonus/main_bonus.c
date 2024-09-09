@@ -12,6 +12,9 @@
 
 #include "philo_bonus.h"
 #include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
 
 int	check_args(int argc, char **argv)
 {
@@ -49,28 +52,30 @@ u_int32_t	ft_atoui32(char *str)
 	return (result);
 }
 
-t_philo	*start_philo(t_main *main, int index)
+void	start_philo(t_main *main, int index)
 {
 	t_philo	*philo;
-	int		i;
 
 	if (!main->philo_count)
-		return (0);
+		exit (1);
 	philo = malloc(sizeof(t_philo));
 	if (!philo)
-		return (0);
+		exit (1);
 	memset(philo, 0, sizeof(t_philo));
 	philo->index = index;
 	philo->main = main;
 	if (!pthread_create(&(philo->thread), NULL, philo_routine, (void *)&(philo)) != 0)
-		return (free(philo));
+	{
+		free(philo);
+		exit (1);
+	}
 }
 
-int	init_main(int argc, char **argv, t_main *main)
+void	init_main(int argc, char **argv, t_main *main)
 {
 	main->sem = sem_open("sem", O_CREAT | O_EXCL, O_RDWR, main->philo_count);
 	if (!check_args(argc, argv))
-		return (1);
+		exit (1);
 	main->philo_count = ft_atoui32(argv[1]);
 	main->time_to_die = ft_atoui32(argv[2]);
 	main->time_to_eat = ft_atoui32(argv[3]);
@@ -85,6 +90,7 @@ int	main(int argc, char **argv)
 {
 	t_main *const	main = &(t_main){0};
 	pid_t			pid;
+	char			*status;
 	int				index;
 
 	init_main(argc, argv, main);
@@ -95,9 +101,12 @@ int	main(int argc, char **argv)
 		start_philo(main, index);
 		index++;
 	}
-	if (pid == 0)
+	if (pid != 0)
 	{
-		
+		index = -1;
+		status = malloc(sizeof(char) * main->philo_count);
+		while (pid != 0 && ++index < main->philo_count)
+			status[index] = (char)waitpid(0, 0, 0);
 	}
 	return (0);
 }

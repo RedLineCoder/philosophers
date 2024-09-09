@@ -15,6 +15,9 @@
 
 # include <pthread.h>
 # include <sys/time.h>
+# include <sys/wait.h>
+# include <stdio.h>
+# include <stdlib.h>
 # include <semaphore.h>
 
 # define MSG_DIE "died"
@@ -47,6 +50,6 @@ typedef struct s_philo
 
 t_timestamp	get_timestamp(void);
 void		ft_usleep(t_timestamp ms);
-int			*philo_routine(void *arg);
+void		*philo_routine(void *arg);
 
 #endif
