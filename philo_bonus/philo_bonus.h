@@ -35,15 +35,17 @@ typedef struct s_main
 	int						time_to_eat;
 	int						time_to_sleep;
 	int						must_eat_count;
-	sem_t					*sem;
+	sem_t					*forks;
+	sem_t					*satisfied;
+	sem_t					*on_death;
 	t_timestamp				startstamp;
 }							t_main;
 
 typedef struct s_philo
 {
 	int						index;
-	int						times_eaten;
 	t_main					*main;
+	int						times_eaten;
 	pthread_t				thread;
 	t_timestamp				diestamp;
 }							t_philo;

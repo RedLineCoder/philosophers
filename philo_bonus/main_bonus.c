@@ -37,9 +37,9 @@ int	check_args(int argc, char **argv)
 	return (1);
 }
 
-u_int32_t	ft_atoui32(char *str)
+unsigned int	ft_atoui32(char *str)
 {
-	u_int32_t	result;
+	unsigned int	result;
 
 	result = 0;
 	while (*str == ' ' || (*str <= '\r' && *str >= '\t'))
@@ -52,30 +52,44 @@ u_int32_t	ft_atoui32(char *str)
 	return (result);
 }
 
-void	start_philo(t_main *main, int index)
+void	destroy_sem_all(t_main *main)
 {
-	t_philo	*philo;
-
-	if (!main->philo_count)
-		exit (1);
-	philo = malloc(sizeof(t_philo));
-	if (!philo)
-		exit (1);
-	memset(philo, 0, sizeof(t_philo));
-	philo->index = index;
-	philo->main = main;
-	if (!pthread_create(&(philo->thread), NULL, philo_routine, (void *)&(philo)) != 0)
+	if (main->forks)
 	{
-		free(philo);
-		exit (1);
+		if (sem_close(&main->forks) == -1)
+			exit(EXIT_FAILURE);
+		if (sem_unlink("/forks") == -1)
+			exit(EXIT_FAILURE);
+	}
+	if (main->satisfied)
+	{
+		if (sem_close(&main->satisfied) == -1)
+			exit(EXIT_FAILURE);
+		if (sem_unlink("/satisfied") == -1)
+			exit(EXIT_FAILURE);
+	}
+	if (main->on_death)
+	{
+		if (sem_close(&main->on_death) == -1)
+			exit(EXIT_FAILURE);
+		if (sem_unlink("/on_death") == -1)
+			exit(EXIT_FAILURE);
 	}
 }
 
 void	init_main(int argc, char **argv, t_main *main)
 {
-	main->sem = sem_open("sem", O_CREAT | O_EXCL, O_RDWR, main->philo_count);
+	main->forks = sem_open("/forks", O_CREAT | O_EXCL, 0644, main->philo_count);
+	if (main->forks == SEM_FAILED)
+		return (destroy_sem_all(main));
+	main->satisfied = sem_open("/satisfied", O_CREAT | O_EXCL, 0644, main->philo_count);
+	if (main->satisfied == SEM_FAILED)
+		return (destroy_sem_all(main));
+	main->on_death = sem_open("/on_death", O_CREAT | O_EXCL, 0644, 1);
+	if (main->on_death == SEM_FAILED)
+		return (destroy_sem_all(main));
 	if (!check_args(argc, argv))
-		exit (1);
+		return (destroy_sem_all(main), exit(EXIT_FAILURE));
 	main->philo_count = ft_atoui32(argv[1]);
 	main->time_to_die = ft_atoui32(argv[2]);
 	main->time_to_eat = ft_atoui32(argv[3]);
@@ -89,24 +103,21 @@ void	init_main(int argc, char **argv, t_main *main)
 int	main(int argc, char **argv)
 {
 	t_main *const	main = &(t_main){0};
-	pid_t			pid;
-	char			*status;
+	t_philo			*philo;
 	int				index;
 
 	init_main(argc, argv, main);
 	index = 1;
-	while (pid != 0 && index <= main->philo_count)
+	while (index <= main->philo_count)
 	{
-		pid = fork();
-		start_philo(main, index);
+		if (fork() == 0)
+		{
+			philo = &(t_philo){index, main};
+			if (!pthread_create(&(philo->thread), NULL, philo_routine, (void *)&(philo)) != 0)
+				exit (1); //handle error
+		}
 		index++;
 	}
-	if (pid != 0)
-	{
-		index = -1;
-		status = malloc(sizeof(char) * main->philo_count);
-		while (pid != 0 && ++index < main->philo_count)
-			status[index] = (char)waitpid(0, 0, 0);
-	}
+	destroy_sem_all(main);
 	return (0);
 }
