@@ -38,9 +38,9 @@ int	check_args(int argc, char **argv)
 	return (1);
 }
 
-u_int32_t	ft_atoui32(char *str)
+unsigned int	ft_atoui32(char *str)
 {
-	u_int32_t	result;
+	unsigned int	result;
 
 	result = 0;
 	while (*str == ' ' || (*str <= '\r' && *str >= '\t'))
@@ -57,15 +57,12 @@ void	destroy_philos(t_main *main, int size)
 {
 	while (--size > -1)
 	{
-		if (pthread_mutex_lock(&main->forks[size]) != EINVAL)
-			pthread_mutex_destroy(&main->forks[size]);
-		if (pthread_mutex_lock(&main->philosophers[size].m_diestamp) != EINVAL)
-			pthread_mutex_destroy(&main->philosophers[size].m_diestamp);
+		pthread_mutex_destroy(&main->forks[size]);
+		pthread_mutex_destroy(&main->philosophers[size].m_diestamp);
 	}
 	free(main->philosophers);
 	free(main->forks);
-	if (pthread_mutex_lock(&main->m_status) != EINVAL)
-		pthread_mutex_destroy(&main->m_status);
+	pthread_mutex_destroy(&main->m_status);
 }
 
 int	init_philos(t_main *main)

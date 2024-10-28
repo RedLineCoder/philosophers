@@ -40,7 +40,7 @@ long long	fetch_data(pthread_mutex_t *mutex, void *data, int size)
 	{
 		if (size == 4)
 			fetcher = *(int *)data;
-		if (size == 8)
+		else if (size == 8)
 			fetcher = *(long long *)data;
 		return (pthread_mutex_unlock(mutex), fetcher);
 	}

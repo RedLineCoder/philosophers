@@ -45,7 +45,9 @@ void	*philo_routine(void *arg)
 		if ((int)fetch_data(&philo->main->m_status, &philo->main->status,
 				4) != INIT)
 		{
+			pthread_mutex_lock(&philo->m_diestamp);
 			philo->diestamp = get_timestamp() + philo->main->time_to_die;
+			pthread_mutex_unlock(&philo->m_diestamp);
 			break ;
 		}
 	}
