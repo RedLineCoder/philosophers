@@ -27,20 +27,24 @@
 # define END 2
 
 typedef unsigned long long	t_timestamp;
-typedef struct s_main		t_main;
 
 typedef struct s_philo
 {
 	int						index;
 	int						times_eaten;
-	int						satisfied;
-	t_main					*main;
+	int						time_to_die;
+	int						time_to_eat;
+	int						time_to_sleep;
+	int						must_eat_count;
+	int						philo_count;
+	int						*satisfied_philos;
+	int						*status;
 	pthread_t				thread;
 	t_timestamp				diestamp;
+	t_timestamp				*startstamp;
+	pthread_mutex_t			*m_main;
 	pthread_mutex_t			*l_fork;
 	pthread_mutex_t			*r_fork;
-	pthread_mutex_t			m_diestamp;
-	pthread_mutex_t			m_times_eaten;
 }							t_philo;
 
 typedef struct s_main
@@ -48,27 +52,20 @@ typedef struct s_main
 	int						status;
 	int						satisfied_philos;
 	int						philo_count;
-	int						time_to_die;
-	int						time_to_eat;
-	int						time_to_sleep;
-	int						must_eat_count;
 	t_timestamp				startstamp;
-	pthread_mutex_t			m_status;
-	t_philo					*philosophers;
-	pthread_mutex_t			*forks;
+	pthread_mutex_t			m_main;
 }							t_main;
 
+// Utils
 t_timestamp					get_timestamp(void);
-int							init_philo(t_main	*main, int i);
-void						destroy_philos(t_main *main, int size);
 void						ft_usleep(t_timestamp ms);
-void						*philo_routine(void *arg);
-void						philo_eat(t_philo *philo);
-void						philo_sleep_think(t_philo *philo);
-void						join_philos(t_main *main);
-void						end_checker(t_main *main);
-int							check_end(t_philo *philo);
 long long					fetch_data(pthread_mutex_t *mutex, void *data,
 								int size);
+int							init_philo(t_philo *philo, int argc, char **argv, int i);
+unsigned int				ft_atoui(char *str);
+
+// Actions
+void						*philo_routine(void *arg);
+
 
 #endif

@@ -16,22 +16,28 @@
 void	print_action(t_philo *philo, char *msg)
 {
 	printf("%llu Philosopher %i %s\n", get_timestamp()
-		- philo->main->startstamp, philo->index, msg);
+		- (unsigned long long)fetch_data(philo->m_main, \
+			philo->startstamp, 8), philo->index, msg);
 }
 
 int	check_end(t_philo *philo)
 {
-	if ((int)fetch_data(&philo->main->m_status, &philo->main->status, 4) == END)
-		return (1);
-	if (philo->r_fork == philo->l_fork)
+	if (philo->diestamp < get_timestamp()
+		&& fetch_data(philo->m_main, philo->status, 4) == START)
 	{
-		printf("%llu Philosopher %i %s\n", get_timestamp()
-			- philo->main->startstamp, philo->index, MSG_FORK);
-		pthread_mutex_lock(&philo->main->m_status);
-		philo->main->status = END;
-		pthread_mutex_unlock(&philo->main->m_status);
-		return (1);
+		print_action(philo, MSG_DIE);
+		pthread_mutex_lock(philo->m_main);
+		*(philo->status) = END;
+		pthread_mutex_lock(philo->m_main);
 	}
+	if ((int)fetch_data(philo->m_main, philo->satisfied_philos, 4) == philo->philo_count)
+	{
+		pthread_mutex_lock(philo->m_main);
+		*(philo->status) = END;
+		pthread_mutex_lock(philo->m_main);
+	}
+	if ((int)fetch_data(philo->m_main, philo->status, 4) == END)
+		return (1);
 	return (0);
 }
 
@@ -62,29 +68,52 @@ int	take_forks(t_philo *philo)
 	return (1);
 }
 
-void	philo_eat(t_philo *philo)
+int	philo_actions(t_philo *philo)
 {
 	if (!take_forks(philo))
-		return ;
+		return (END);
 	print_action(philo, MSG_EAT);
-	pthread_mutex_lock(&philo->m_diestamp);
-	philo->diestamp = get_timestamp() + philo->main->time_to_die;
-	pthread_mutex_unlock(&philo->m_diestamp);
-	pthread_mutex_lock(&philo->m_times_eaten);
+	philo->diestamp = get_timestamp() + philo->time_to_die;
 	philo->times_eaten++;
-	pthread_mutex_unlock(&philo->m_times_eaten);
-	ft_usleep(philo->main->time_to_eat);
+	if (philo->times_eaten == philo->must_eat_count)
+	{
+		pthread_mutex_lock(philo->m_main);
+		philo->satisfied_philos++;
+		pthread_mutex_unlock(philo->m_main);
+	}
+	ft_usleep(philo->time_to_eat);
 	pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
+	if (check_end(philo))
+		return (END);
+	print_action(philo, MSG_SLEEP);
+	ft_usleep(philo->time_to_sleep);
+	if (check_end(philo))
+		return (END);
+	print_action(philo, MSG_THINK);
+	return (0);
 }
 
-void	philo_sleep_think(t_philo *philo)
+void	*philo_routine(void *arg)
 {
-	if (check_end(philo))
-		return ;
-	print_action(philo, MSG_SLEEP);
-	ft_usleep(philo->main->time_to_sleep);
-	if (check_end(philo))
-		return ;
-	print_action(philo, MSG_THINK);
+	t_philo *const	philo = (t_philo *)arg;
+
+	while (1)
+	{
+		if ((int)fetch_data(philo->m_main, philo->status, 4))
+		{
+			pthread_mutex_lock(philo->m_main);
+			philo->diestamp = *(philo->startstamp) + philo->time_to_die;
+			pthread_mutex_unlock(philo->m_main);
+			break ;
+		}
+	}
+	while (1)
+	{
+		if (philo_actions(philo))
+			break ;
+	}
+	printf("Philo %i ended", philo->index);
+	pthread_mutex_destroy(philo->l_fork);
+	return (NULL);
 }

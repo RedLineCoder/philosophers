@@ -38,79 +38,57 @@ int	check_args(int argc, char **argv)
 	return (1);
 }
 
-unsigned int	ft_atoui32(char *str)
+int	init_philos(t_main *main, t_philo *philos, int argc, char **argv)
 {
-	unsigned int	result;
+	pthread_mutex_t *const	forks = malloc(sizeof(pthread_mutex_t) * main->philo_count);
+	int						i;
 
-	result = 0;
-	while (*str == ' ' || (*str <= '\r' && *str >= '\t'))
-		str++;
-	while (*str >= '0' && *str <= '9')
-	{
-		result = result * 10 + *str - 48;
-		str++;
-	}
-	return (result);
-}
-
-void	destroy_philos(t_main *main, int size)
-{
-	while (--size > -1)
-	{
-		pthread_mutex_destroy(&main->forks[size]);
-		pthread_mutex_destroy(&main->philosophers[size].m_diestamp);
-	}
-	free(main->philosophers);
-	free(main->forks);
-	pthread_mutex_destroy(&main->m_status);
-}
-
-int	init_philos(t_main *main)
-{
-	int	i;
-
+	if (!forks)
+		return (0);
 	if (!main->philo_count)
 		return (0);
-	main->philosophers = malloc(sizeof(t_philo) * main->philo_count);
-	if (!main->philosophers)
-		return (0);
-	memset(main->philosophers, 0, sizeof(t_philo) * main->philo_count);
-	main->forks = malloc(sizeof(pthread_mutex_t) * main->philo_count);
-	if (!main->forks)
-		return (free(main->philosophers), 0);
 	i = -1;
 	while (++i < main->philo_count)
-		if (pthread_mutex_init(&main->forks[i], NULL) != 0)
-			return (destroy_philos(main, i), 0);
-	i = -1;
-	while (++i < main->philo_count)
-		if (!init_philo(main, i))
+		if (pthread_mutex_init(&forks[i], NULL) != 0)
 			return (0);
+	i = -1;
+	while (++i < main->philo_count)
+	{
+		philos[i].philo_count = main->philo_count;
+		philos[i].satisfied_philos = &(main->satisfied_philos);
+		philos[i].status = &(main->status);
+		philos[i].startstamp = &(main->startstamp);
+		philos[i].m_main = &(main->m_main);
+		philos[i].l_fork = &forks[i];
+		philos[i].r_fork = &forks[(i + 1) % main->philo_count];
+		if (!init_philo(&philos[i], argc, argv, i))
+			return (0);
+	}
 	return (1);
 }
 
 int	main(int argc, char **argv)
 {
 	t_main *const	main = &(t_main){0};
+	t_philo *const	philos = malloc(sizeof(t_philo) * ft_atoui(argv[1]));
+	int				i;
 
-	if (!check_args(argc, argv))
-		return (1);
-	main->philo_count = ft_atoui32(argv[1]);
-	main->time_to_die = ft_atoui32(argv[2]);
-	main->time_to_eat = ft_atoui32(argv[3]);
-	main->time_to_sleep = ft_atoui32(argv[4]);
-	main->must_eat_count = -1;
-	if (argc == 6)
-		main->must_eat_count = ft_atoui32(argv[5]);
-	pthread_mutex_init(&(main->m_status), NULL);
-	if (!init_philos(main))
+	if (!philos)
 		return (write(2, "Philosopher initialization error!\n", 34), 1);
-	pthread_mutex_lock(&(main->m_status));
+	if (!check_args(argc, argv))
+		return (free(philos), 1);
+	main->philo_count = ft_atoui(argv[1]);
+	memset(philos, 0, sizeof(t_philo) * main->philo_count);
+	if (pthread_mutex_init(&main->m_main, NULL))
+		return (free(philos), 1);
+	if (!init_philos(main, philos, argc, argv))
+		return (free(philos), 1);
+	pthread_mutex_lock(&(main->m_main));
 	main->startstamp = get_timestamp();
 	main->status = START;
-	pthread_mutex_unlock(&(main->m_status));
-	end_checker(main);
-	join_philos(main);
-	destroy_philos(main, main->philo_count);
+	pthread_mutex_unlock(&(main->m_main));
+	i = -1;
+	while (++i < main->philo_count)
+		pthread_join(philos[i].thread, NULL);
 	return (0);
 }

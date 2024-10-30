@@ -47,47 +47,31 @@ long long	fetch_data(pthread_mutex_t *mutex, void *data, int size)
 	return (0);
 }
 
-int	eat_checker(t_main *main, int i)
+unsigned int	ft_atoui(char *str)
 {
-	if (main->must_eat_count == -1)
-		return (0);
-	if ((int)fetch_data(&main->philosophers[i].m_times_eaten,
-			&main->philosophers[i].times_eaten, 4) >= main->must_eat_count)
+	unsigned int	result;
+
+	result = 0;
+	while (*str == ' ' || (*str <= '\r' && *str >= '\t'))
+		str++;
+	while (*str >= '0' && *str <= '9')
 	{
-		if (!main->philosophers[i].satisfied)
-			main->satisfied_philos++;
-		main->philosophers[i].satisfied = 1;
-		if (main->satisfied_philos == main->philo_count)
-		{
-			pthread_mutex_lock(&main->m_status);
-			main->status = END;
-			pthread_mutex_unlock(&main->m_status);
-			return (1);
-		}
+		result = result * 10 + *str - 48;
+		str++;
 	}
-	return (0);
+	return (result);
 }
 
-void	end_checker(t_main *main)
+int	init_philo(t_philo *philo, int argc, char **argv, int i)
 {
-	int	i;
-
-	i = 0;
-	while (1)
-	{
-		if ((t_timestamp)fetch_data(&main->philosophers[i].m_diestamp,
-				&main->philosophers[i].diestamp, 8) < get_timestamp()
-			&& !fetch_data(&main->m_status, &main->status, 4))
-		{
-			printf("%lld Philosopher %i %s\n", get_timestamp()
-				- main->startstamp, main->philosophers[i].index, MSG_DIE);
-			pthread_mutex_lock(&main->m_status);
-			main->status = END;
-			pthread_mutex_unlock(&main->m_status);
-			return ;
-		}
-		if (eat_checker(main, i))
-			return ;
-		i = (i + 1) % main->philo_count;
-	}
+	philo->index = i + 1;
+	philo->time_to_die = ft_atoui(argv[2]);
+	philo->time_to_eat = ft_atoui(argv[3]);
+	philo->time_to_sleep = ft_atoui(argv[4]);
+	philo->must_eat_count = -1;
+	if (argc == 6)
+		philo->must_eat_count = ft_atoui(argv[5]);
+	if (pthread_create(&(philo->thread), NULL, philo_routine, (void *)philo) != 0)
+		return (0);
+	return (1);
 }

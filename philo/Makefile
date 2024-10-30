@@ -1,6 +1,6 @@
 NAME = philo
 HEADER = philo.h
-SOURCES = main.c utils.c actions.c philos.c
+SOURCES = main.c utils.c actions.c
 CC = cc
 CFLAGS= -Wall -Wextra -Werror
 
