@@ -43,6 +43,7 @@ typedef struct s_philo
 	t_timestamp				diestamp;
 	t_timestamp				*startstamp;
 	pthread_mutex_t			*m_main;
+	pthread_mutex_t			*m_msg;
 	pthread_mutex_t			*l_fork;
 	pthread_mutex_t			*r_fork;
 }							t_philo;
@@ -54,6 +55,8 @@ typedef struct s_main
 	int						philo_count;
 	t_timestamp				startstamp;
 	pthread_mutex_t			m_main;
+	pthread_mutex_t			m_msg;
+	pthread_mutex_t			*forks;
 }							t_main;
 
 // Utils

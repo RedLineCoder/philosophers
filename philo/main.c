@@ -40,16 +40,13 @@ int	check_args(int argc, char **argv)
 
 int	init_philos(t_main *main, t_philo *philos, int argc, char **argv)
 {
-	pthread_mutex_t *const	forks = malloc(sizeof(pthread_mutex_t) * main->philo_count);
-	int						i;
+	int	i;
 
-	if (!forks)
-		return (0);
 	if (!main->philo_count)
 		return (0);
 	i = -1;
 	while (++i < main->philo_count)
-		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		if (pthread_mutex_init(&main->forks[i], NULL) != 0)
 			return (0);
 	i = -1;
 	while (++i < main->philo_count)
@@ -59,8 +56,9 @@ int	init_philos(t_main *main, t_philo *philos, int argc, char **argv)
 		philos[i].status = &(main->status);
 		philos[i].startstamp = &(main->startstamp);
 		philos[i].m_main = &(main->m_main);
-		philos[i].l_fork = &forks[i];
-		philos[i].r_fork = &forks[(i + 1) % main->philo_count];
+		philos[i].m_msg = &(main->m_msg);
+		philos[i].l_fork = &main->forks[i];
+		philos[i].r_fork = &main->forks[(i + 1) % main->philo_count];
 		if (!init_philo(&philos[i], argc, argv, i))
 			return (0);
 	}
@@ -78,8 +76,11 @@ int	main(int argc, char **argv)
 	if (!check_args(argc, argv))
 		return (free(philos), 1);
 	main->philo_count = ft_atoui(argv[1]);
+	main->forks = malloc(sizeof(pthread_mutex_t) * main->philo_count);
+	if (!main->forks)
+		return (free(philos), 1);
 	memset(philos, 0, sizeof(t_philo) * main->philo_count);
-	if (pthread_mutex_init(&main->m_main, NULL))
+	if (pthread_mutex_init(&main->m_main, NULL) || pthread_mutex_init(&main->m_msg, NULL))
 		return (free(philos), 1);
 	if (!init_philos(main, philos, argc, argv))
 		return (free(philos), 1);
