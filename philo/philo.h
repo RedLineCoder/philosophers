@@ -70,5 +70,6 @@ unsigned int				ft_atoui(char *str);
 // Actions
 void						*philo_routine(void *arg);
 
+// valgrind --tool=helgrind --free-is-write=yes --track-lockorders=yes --fair-sched=yes ./philo 4 410 200 200 2
 
 #endif
